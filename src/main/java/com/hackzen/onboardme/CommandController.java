@@ -29,6 +29,15 @@ public class CommandController {
 		
 		return onboardMeService.process(request);
 	}
+
+	@PostMapping(value = "/fillup", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public String fillupFormCommand(@RequestBody MultiValueMap<String, String> request) {
+		log.info("Request: {}", request);
+
+		sc.openDialogue(request.get("trigger_id").get(0));
+
+		return "hello";
+	}
 	
 	@PostMapping(value = "/admin", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public String processAdminCommand(@RequestBody MultiValueMap<String, String> request) {
