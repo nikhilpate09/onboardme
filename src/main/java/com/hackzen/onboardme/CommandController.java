@@ -42,15 +42,19 @@ public class CommandController {
 	@PostMapping(value = "/admin", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public String processAdminCommand(@RequestBody MultiValueMap<String, String> request) {
 		log.info("Request: {}", request);
-		
 		return onboardMeService.initiateOnboardingProcess(request);
+	}
+
+	@PostMapping(value = "/sendOnboardingForm", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public String processFillUpFormCommand(@RequestBody MultiValueMap<String, String> request) {
+		log.info("Request: {}", request);
+		return onboardMeService.sendOnboardingForm(request);
 	}
 
 	@PostMapping(value = "/onboard/action", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public String cmd(@RequestBody MultiValueMap<String, String> request) {
 		System.out.println("--> " + request);
 		return "FromNewSpringBootApp";
-
 	}
 	
 	@GetMapping("/users/pull")

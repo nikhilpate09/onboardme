@@ -3,7 +3,11 @@ package com.hackzen.onboardme.slack.api;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hubspot.algebra.Result;
+import com.hubspot.slack.client.methods.params.chat.ChatPostMessageParams;
 import com.hubspot.slack.client.methods.params.dialog.DialogOpenParams;
+import com.hubspot.slack.client.models.Attachment;
+import com.hubspot.slack.client.models.actions.Action;
+import com.hubspot.slack.client.models.actions.ActionType;
 import com.hubspot.slack.client.models.dialog.SlackDialog;
 import com.hubspot.slack.client.models.dialog.form.SlackFormElementSubtypes;
 import com.hubspot.slack.client.models.dialog.form.SlackFormElementTypes;
@@ -25,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 @Slf4j
 @Service
@@ -60,6 +65,34 @@ public class SlackClient {
         String result = restTemplate.postForObject(api, entity, String.class);
 
         log.info(result);
+    }
+
+    public void sendMessageForOnboardForm(String userId) {
+        com.hubspot.slack.client.SlackClient slackClient = BasicRuntimeConfig.getClient();
+
+        Action action = Action.builder()
+                .setName("openForm")
+                .setText("Open form")
+                .setType(ActionType.BUTTON)
+                .setValue("openForm")
+                .build();
+
+        Attachment attachment = Attachment.builder()
+                .setCallbackId("openForm")
+                .setColor("#3AA3E3")
+                .setAttachmentType("default")
+                .setActions(Collections.singletonList(action))
+                .build();
+
+        ChatPostMessageParams chatPostMessageParams = ChatPostMessageParams.builder()
+                .setChannelId(userId)
+                .setText("Please fill up the onboarding form")
+                .setAttachments(Collections.singletonList(attachment))
+                .setUsername(userId)
+                .setAsUser(true)
+                .build();
+
+        slackClient.postMessage(chatPostMessageParams);
     }
 
     public void openDialogue(String triggerId) {
