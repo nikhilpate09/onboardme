@@ -39,17 +39,17 @@ public class CommandController {
 		return onboardMeService.process(request);
 	}
 
-	@PostMapping(value = "/fillup", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
-	public void fillupFormCommand(@RequestBody MultiValueMap<String, String> request) {
-		log.info("Request: {}", request);
-		sc.openDialogue(request.get("trigger_id").get(0));
-	}
-
 	@PostMapping(value = "/admin", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
 	public String processAdminCommand(@RequestBody MultiValueMap<String, String> request) {
 		log.info("Request: {}", request);
 
 		return onboardMeService.initiateOnboardingProcess(request);
+	}
+
+	@PostMapping(value = "/sendOnboardingForm", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+	public String processFillUpFormCommand(@RequestBody MultiValueMap<String, String> request) {
+		log.info("Request: {}", request);
+		return onboardMeService.sendOnboardingForm(request);
 	}
 
 	@PostMapping(value = "/onboard/action", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
@@ -69,7 +69,7 @@ public class CommandController {
 		}
 
 		return ResponseEntity.ok().build();
-	}
+	}	
 
 	@GetMapping("/users/pull")
 	public String saveUsers() {

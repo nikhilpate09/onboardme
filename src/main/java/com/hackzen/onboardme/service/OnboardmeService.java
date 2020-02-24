@@ -57,6 +57,13 @@ public class OnboardmeService {
 		return "Onboarding initiated !!";
 	}
 
+	public String sendOnboardingForm(MultiValueMap<String, String> request) {
+		String attributeValue = getAttributeValue("text", request);
+		UserInfo userInfo = slackService.getUserByEmailId(attributeValue);
+		slackService.sendOnbordingFormMessage(userInfo.getUserId());
+		return "Onboarding form sent !!";
+	}
+
 	public String process(MultiValueMap<String, String> request) {
 		String command = getAttributeValue("text", request);
 
