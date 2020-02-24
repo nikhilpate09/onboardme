@@ -120,6 +120,18 @@ public class SlackClient {
 
         Result<DialogOpenResponse, SlackError> result = slackClient.openDialog(dialogOpenParams).join();
     }
+
+	public void sendInformationSavedMessage(String responseUrl) {
+		String requestString = "{\"text\":\"Details saved successfully !!\"}";
+        String api = "https://slack.com/api/chat.postMessage";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.add("Authorization", "Bearer " + slackToken);
+
+        HttpEntity<String> entity = new HttpEntity<String>(requestString, headers);
+        restTemplate.postForObject(responseUrl, entity, String.class);
+	}
 }
 
 @Data

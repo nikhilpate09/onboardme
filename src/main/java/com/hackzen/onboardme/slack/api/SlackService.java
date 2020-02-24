@@ -48,4 +48,8 @@ public class SlackService {
 		return UserInfo.builder().name(profile.getReal_name()).emailId(profile.getEmail()).teamId(profile.getTeam())
 				.userId(members.getId()).build();
 	}
+	
+	public void sendInformationSavedMessage(String responseUrl) {
+		sc.sendInformationSavedMessage(responseUrl);
+	}
 }

@@ -1,12 +1,19 @@
 package com.hackzen.onboardme.service;
 
+import java.io.IOException;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.hackzen.onboardme.db.DatabaseCache;
+import com.hackzen.onboardme.db.Submission;
 import com.hackzen.onboardme.db.UserInfo;
+import com.hackzen.onboardme.db.UserMetaDataRepo;
+import com.hackzen.onboardme.slack.api.DialogueRequest;
 import com.hackzen.onboardme.slack.api.SlackService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +30,9 @@ public class OnboardmeService {
 
 	@Autowired
 	private EmailService emailService;
+
+	@Autowired
+	private UserMetaDataRepo umdr;
 
 	public String initiateOnboardingProcess(MultiValueMap<String, String> request) {
 		String attributeValue = getAttributeValue("text", request);
@@ -55,17 +65,31 @@ public class OnboardmeService {
 
 	private String process(String commandtext) {
 		String commandKey = CommandProcessor.extractKey(commandtext);
-		String info = dbCache.getInfo(commandKey).replaceAll("LB", System.lineSeparator()).replaceAll("TAB", "    ");
+		String info = dbCache.getInfo(commandKey);
 
 		if (StringUtils.isEmpty(info)) {
-			return "Didn't get that !! Try /buddy help me for more info !!";
+			return "Didn't get that !! Try `/buddy help me` for more info !!";
 		}
+		return info.replaceAll("LB", System.lineSeparator()).replaceAll("TAB", "    ");
+	}
 
-		return info;
+	@Async
+	public void processDialogue(MultiValueMap<String, String> request) {
+		String payload = getAttributeValue("payload", request);
+ 
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			DialogueRequest readValue = mapper.readValue(payload.getBytes(), DialogueRequest.class);
+			Submission submission = readValue.getSubmission();
+			umdr.save(submission);
+			slackService.sendInformationSavedMessage(readValue.getResponse_url());
+		} catch (IOException e) {
+			return;
+		}
 	}
 
 	private String getAttributeValue(String key, MultiValueMap<String, String> request) {
-		return request.get("text").get(0);
+		return request.get(key).get(0);
 	}
 
 	public void pullUsersAndSave() {
