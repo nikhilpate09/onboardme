@@ -33,7 +33,7 @@ public class SlackClient {
     @Autowired
     private RestTemplate restTemplate;
 
-    @Value("slack.token")
+    @Value("${slack.token}")
     private String slackToken;
 
     public GetUsersResponse getAllUsers() {
