@@ -1,5 +1,6 @@
 package com.hackzen.onboardme.db;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -22,6 +23,7 @@ public class OnboardProperties {
 	
 	private String propertyKey;
 	
+	@Column(length = 1000)
 	private String propertyValue;
 	
 	private String description;

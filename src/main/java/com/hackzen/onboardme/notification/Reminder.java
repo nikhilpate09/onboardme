@@ -35,7 +35,7 @@ public class Reminder {
 
 	@PostConstruct
 	public void init() {
-		remindToCreateIdCard();
+		//remindToCreateIdCard();
 	}
 
 	@Scheduled(cron = "${submit.docs.cron.expression}")
@@ -99,5 +99,11 @@ public class Reminder {
 	private void remindAdminForUser(ReminderInfo ri) {
 		String remindText = "Hey admin, reminder to create ID for our new hire " + ri.getName();
 		sendMessage(adminUserId, remindText);
+	}
+
+	@Scheduled(cron = "0 0/15 * * * *")
+	public void pullUsers() {
+		log.info("Backend::Current time is :: " + Calendar.getInstance().getTime());
+		ss.pullUsersAndSave();
 	}
 }
